@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "*.下载": "javascript",
+        ".env.test.sh": "shellscript",
+        ".env.sh": "shellscript",
+        ".env.ps1": "powershell",
+        "*.conf": "NGINX",
+        "patch": "git-commit",
+        "*.py": "python",
+        "*.toml": "toml",
+        "README": "markdown",
+        "stdio.h": "c"
+    }
+}
