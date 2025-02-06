@@ -9,6 +9,26 @@
         "*.py": "python",
         "*.toml": "toml",
         "README": "markdown",
-        "stdio.h": "c"
-    }
+        "stdio.h": "c",
+        "chunk.h": "c",
+        "vector": "cpp",
+        "array": "cpp",
+        "deque": "cpp",
+        "string": "cpp",
+        "iterator": "cpp",
+        "string_view": "cpp",
+        "memory.h": "c",
+        "stdlib.h": "c",
+        "compare": "c",
+        "functional": "c",
+        "tuple": "c",
+        "type_traits": "c",
+        "utility": "c",
+        "debug.h": "c",
+        "common.h": "c",
+        "value.h": "c",
+        "vm.h": "c",
+        "stdbool.h": "c"
+    },
+    "C_Cpp.default.compilerPath": "/usr/bin/gcc-11"
 }

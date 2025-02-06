@@ -8,8 +8,8 @@
             "type": "lldb",
             "request": "launch",
             "name": "Launch",
-            "program": "${workspaceFolder}/build/lox",
-            "preLaunchTask": "CMake: build",
+            "program": "${workspaceFolder}/build/clox",
+            "preLaunchTask": "CMake: clean rebuild",
             "args": [],
             "cwd": "${workspaceFolder}"
         }

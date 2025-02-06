@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(lox)
+project(clox)
 
-add_executable(lox src/main.c)
+file(GLOB_RECURSE SOURCES src/*.c)
+add_executable(clox ${SOURCES})
+
+target_compile_options(clox PRIVATE -Wimplicit-int)
+target_include_directories(clox PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
