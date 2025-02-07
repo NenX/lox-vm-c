@@ -10,7 +10,7 @@
             "name": "Launch",
             "program": "${workspaceFolder}/build/clox",
             "preLaunchTask": "CMake: clean rebuild",
-            "args": [],
+            "args": ["test.lox"],
             "cwd": "${workspaceFolder}"
         }
    

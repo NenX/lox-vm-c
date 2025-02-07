@@ -1,6 +1,6 @@
 #include "debug.h"
 #include "vm.h"
-
+#include "compiler.h"
 #include <stdio.h>
 VM vm;
 
@@ -94,13 +94,12 @@ static InterpretResult run()
 
 #undef READ_BYTE
 #undef READ_CONSTANT
-#undef BINARY_OP
+#undef BINARY_OP    
 }
 
 // 解释字节码，并返回解释结果
-InterpretResult interpret(Chunk *chunk)
+InterpretResult interpret(const char *source)
 {
-    vm.chunk = chunk;
-    vm.ip = vm.chunk->code;
-    return run();
+    compile(source);
+    return INTERPRET_OK;
 }
