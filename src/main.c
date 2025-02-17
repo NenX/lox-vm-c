@@ -78,8 +78,10 @@ int main(int argc, const char *argv[])
 {
 #ifdef _WIN32
     system("cls");
+    printf("win32 !\r\n");
 #else
     system("clear");
+    printf("linux !\r\n");
 #endif
     initVM();
     // 如果命令行参数为空，则进入 repl 模式
