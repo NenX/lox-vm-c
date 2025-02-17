@@ -6,6 +6,6 @@
 #include <stdint.h>  // in order to use int8_t, int16_t, int32_t, int64_t
 
 
-
+#define DEBUG_PRINT_CODE
 #define DEBUG_TRACE_EXECUTION
 #endif

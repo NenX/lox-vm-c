@@ -62,7 +62,10 @@ static char *readFile(const char *path)
 static void runFile(const char *path)
 {
     char *source = readFile(path);
+
+    // 解释器运行
     InterpretResult result = interpret(source);
+
     free(source);
 
     if (result == INTERPRET_COMPILE_ERROR)

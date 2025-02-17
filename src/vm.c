@@ -94,12 +94,26 @@ static InterpretResult run()
 
 #undef READ_BYTE
 #undef READ_CONSTANT
-#undef BINARY_OP    
+#undef BINARY_OP
 }
 
 // 解释字节码，并返回解释结果
 InterpretResult interpret(const char *source)
 {
-    compile(source);
-    return INTERPRET_OK;
+    Chunk chunk;
+    initChunk(&chunk);
+
+    if (!compile(source, &chunk))
+    {
+        freeChunk(&chunk);
+        return INTERPRET_COMPILE_ERROR;
+    }
+
+    vm.chunk = &chunk;
+    vm.ip = vm.chunk->code;
+
+    InterpretResult result = run();
+
+    freeChunk(&chunk);
+    return result;
 }
