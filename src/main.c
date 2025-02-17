@@ -51,7 +51,6 @@ static char *readFile(const char *path)
         exit(74);
     }
 
-
     // 设置文件结束符
     buffer[bytesRead] = '\0';
 
@@ -77,7 +76,11 @@ static void runFile(const char *path)
 // Entry point
 int main(int argc, const char *argv[])
 {
+#ifdef _WIN32
+    system("cls");
+#else
     system("clear");
+#endif
     initVM();
     // 如果命令行参数为空，则进入 repl 模式
     if (argc == 1)

@@ -5,6 +5,18 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "(Windows) Launch",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/Debug/clox",
+            "cwd": "${workspaceFolder}",
+            "args": ["test.lox"],
+            "preLaunchTask": "CMake: clean rebuild",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "environment": [],
+        },
+        {
             "type": "lldb",
             "request": "launch",
             "name": "Launch",
