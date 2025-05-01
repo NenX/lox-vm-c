@@ -5,8 +5,8 @@
 #include <stdio.h>
 VM vm;
 
-static void resetStack()
-{
+static void resetStack()    
+{   
     vm.stackTop = vm.stack;
 }
 static void runtimeError(const char *format, ...)
@@ -52,11 +52,11 @@ void push(Value value)
     vm.stackTop++;
 }
 
-// 运行字节码
+// 运行字节码，并把结果 push 到 vm.stack
 static InterpretResult run()
 {
 #ifdef DEBUG_TRACE_EXECUTION
-    printf("== run ==");
+    printf("== run ==\n");
 #endif
 
 #define READ_BYTE() (*vm.ip++)
@@ -79,12 +79,20 @@ static InterpretResult run()
     {
 #ifdef DEBUG_TRACE_EXECUTION
         printf("          ");
-        for (Value *slot = vm.stack; slot < vm.stackTop; slot++)
+        if (vm.stackTop == vm.stack)
         {
-            printf("[ ");
-            printValue(*slot);
-            printf(" ]");
+            printf("[ EMPTY ]");
         }
+        else
+        {
+            for (Value *slot = vm.stack; slot < vm.stackTop; slot++)
+            {
+                printf("[ ");
+                printValue(*slot);
+                printf(" ]");
+            }
+        }
+
         printf("\n");
         disassembleInstruction(vm.chunk, (int)(vm.ip - vm.chunk->code));
 #endif

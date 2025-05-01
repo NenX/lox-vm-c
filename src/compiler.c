@@ -8,15 +8,15 @@
 #endif
 typedef struct
 {
-    Token current;
-    Token previous;
-    bool panicMode;
-    bool hadError;
+    Token current;  // 下一个 token
+    Token previous; // 当前处理的 token
+    bool panicMode; // 是否 panic 模式
+    bool hadError;  // 是否有错误
 } Parser;
 
 typedef enum
 {
-    PREC_NONE,
+    PREC_NONE,       // 无优先级
     PREC_ASSIGNMENT, // =
     PREC_OR,         // or
     PREC_AND,        // and
@@ -37,7 +37,7 @@ typedef struct
 } ParseRule;
 
 Parser parser;
-
+// 保存 compile 函数的 chunk 参数指针
 Chunk *compilingChunk;
 
 static Chunk *currentChunk()
@@ -79,6 +79,7 @@ static void errorAtCurrent(const char *message)
     errorAt(&parser.current, message);
 }
 
+// 设置 parser.previous parser.current
 static void advance()
 {
     parser.previous = parser.current;
@@ -103,11 +104,12 @@ static void consume(TokenType type, const char *message)
 
     errorAtCurrent(message);
 }
+// 调用 writeChunk 向 compilingChunk 写入字节码
 static void emitByte(uint8_t byte)
 {
     writeChunk(currentChunk(), byte, parser.previous.line);
 }
-
+// 写入两个字节码
 static void emitBytes(uint8_t byte1, uint8_t byte2)
 {
     emitByte(byte1);
@@ -118,6 +120,8 @@ static void emitReturn()
 {
     emitByte(OP_RETURN);
 }
+// 调用 addConstant 将 value push 到 chunk->constants，并返回索引。
+// 相较于 addConstant， 还会检查索引是否超过 UINT8_MAX
 static uint8_t makeConstant(Value value)
 {
     int constant = addConstant(currentChunk(), value);
@@ -140,7 +144,7 @@ static void endCompiler()
 #ifdef DEBUG_PRINT_CODE
     if (!parser.hadError)
     {
-        disassembleChunk(currentChunk(), "endCompiler");
+        disassembleChunk(currentChunk(), "disassemble_chunk");
     }
 #endif
 }
@@ -150,10 +154,10 @@ static void parsePrecedence(Precedence precedence);
 
 static void binary()
 {
-    TokenType operatorType = parser.previous.type;
+    TokenType operatorType = parser.previous.type; // 指向两元操作符，次数左边的操作数已经压入栈
     ParseRule *rule = getRule(operatorType);
     parsePrecedence((Precedence)(rule->precedence + 1));
-
+    // 此时 parser.previous 指向操作符右边的操作数（的最后一个字符）
     switch (operatorType)
     {
     case TOKEN_BANG_EQUAL:
@@ -238,6 +242,7 @@ static void unary()
         return; // Unreachable.
     }
 }
+// PREC_NONE 表示 infix 为 NULL，在 parsePrecedence 中，while 循环不会执行
 ParseRule rules[] = {
     [TOKEN_LEFT_PAREN] = {grouping, NULL, PREC_NONE},
     [TOKEN_RIGHT_PAREN] = {NULL, NULL, PREC_NONE},
@@ -280,9 +285,16 @@ ParseRule rules[] = {
     [TOKEN_ERROR] = {NULL, NULL, PREC_NONE},
     [TOKEN_EOF] = {NULL, NULL, PREC_NONE},
 };
+/** 
+    首先调用 advance，获取下一个 token，然后调用这个 token 对应的 prefixRule
+    如果 prefixRule 为 NULL，报错，如果不为 NULL，调用 prefixRule
+    然后调用 advance，获取下一个 token，然后调用这个 token 对应的 infixRule
+    如果 infixRule 为 NULL，报错，如果不为 NULL，调用 infixRule
+    然后重复上述步骤，直到当前 token 的优先级高于 precedence
+*/
 static void parsePrecedence(Precedence precedence)
 {
-    advance();
+    advance(); // 如果是两元操作符，那么 advance 之后 parser.previous 指向右边的操作数
     ParseFn prefixRule = getRule(parser.previous.type)->prefix;
     if (prefixRule == NULL)
     {
@@ -290,13 +302,14 @@ static void parsePrecedence(Precedence precedence)
         return;
     }
 
-    prefixRule();
+    prefixRule(); // 如果是两元操作符，那么此时 parser.current 指向右边的操作数后面的操作符
     while (precedence <= getRule(parser.current.type)->precedence)
     {
         advance();
         ParseFn infixRule = getRule(parser.previous.type)->infix;
         infixRule();
     }
+    // 最终结束时，parser.previous 文本最后的字符 parser.current 指向EOF
 }
 static ParseRule *getRule(TokenType type)
 {
@@ -304,10 +317,10 @@ static ParseRule *getRule(TokenType type)
 }
 static void expression()
 {
-    // 替换部分开始
+    // 如果使用 PREC_NONE，那么在 parsePrecedence 中，while 循环会执行，但是 getRule(parser.current.type)->infix 为 NULL，所以会报错
     parsePrecedence(PREC_ASSIGNMENT);
-    // 替换部分结束
 }
+// 将文本编译成字节码，保存到 chunk
 bool compile(const char *source, Chunk *chunk)
 {
     initScanner(source);

@@ -23,8 +23,9 @@ typedef enum
 } OpCode;
 
 // Chunk 字节码结构体
+// 为什么 count 要使用 int 而不是 unsigned int 的原因是因为 int 可以表示负数，这在默写情况下有用的，例如处理错误
 typedef struct
-{
+{   
     int count;            // 字节码数量
     int capacity;         // 字节码容量
     uint8_t *code;        // 字节码数组

@@ -18,8 +18,8 @@ typedef enum
 typedef struct
 {
     Chunk *chunk; // 字节码 
-    uint8_t *ip; // 当前执行的指令
-    Value stack[STACK_MAX]; // 储存值的栈   
+    uint8_t *ip; // 当前执行的指令, 指向 vm.chunk->code
+    Value stack[STACK_MAX]; // 运行时储存值的栈   
     Value *stackTop; // 栈顶指针
 } VM;
 

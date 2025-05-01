@@ -95,6 +95,7 @@ static bool isAtEnd()
 {
     return *scanner.current == '\0';
 }
+// 返回 scanner.current 对应的字符，并 +1
 static char advance()
 {
     scanner.current++;
@@ -218,7 +219,7 @@ static Token identifier()
     return makeToken(identifierType());
 }
 
-// 在 compile 中调用被循环调用，返回 Token 类型
+// 在 compile 的 advance 中调用，返回 Token 类型
 Token scanToken()
 {
     skipWhitespace();
