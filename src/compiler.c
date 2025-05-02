@@ -1,8 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "common.h"
 #include "compiler.h"
 #include "scanner.h"
+
+#include "object.h"
 #ifdef DEBUG_PRINT_CODE
 #include "debug.h"
 #endif
@@ -217,6 +220,11 @@ static void grouping()
     expression();
     consume(TOKEN_RIGHT_PAREN, "Expect ')' after expression.");
 }
+// 分配 ObjString 内存，并将指针保存到 chunk->constants
+static void string()
+{
+    emitConstant(OBJ_VAL(copyString(parser.previous.start + 1, parser.previous.length - 2)));
+}
 static void number()
 {
     double value = strtod(parser.previous.start, NULL);
@@ -264,8 +272,8 @@ ParseRule rules[] = {
     [TOKEN_LESS] = {NULL, binary, PREC_COMPARISON},
     [TOKEN_LESS_EQUAL] = {NULL, binary, PREC_COMPARISON},
     [TOKEN_IDENTIFIER] = {NULL, NULL, PREC_NONE},
-    [TOKEN_STRING] = {NULL, NULL, PREC_NONE},
     [TOKEN_NUMBER] = {number, NULL, PREC_NONE},
+    [TOKEN_STRING] = {string, NULL, PREC_NONE},
     [TOKEN_AND] = {NULL, NULL, PREC_NONE},
     [TOKEN_CLASS] = {NULL, NULL, PREC_NONE},
     [TOKEN_ELSE] = {NULL, NULL, PREC_NONE},
@@ -285,7 +293,7 @@ ParseRule rules[] = {
     [TOKEN_ERROR] = {NULL, NULL, PREC_NONE},
     [TOKEN_EOF] = {NULL, NULL, PREC_NONE},
 };
-/** 
+/**
     首先调用 advance，获取下一个 token，然后调用这个 token 对应的 prefixRule
     如果 prefixRule 为 NULL，报错，如果不为 NULL，调用 prefixRule
     然后调用 advance，获取下一个 token，然后调用这个 token 对应的 infixRule
